@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-namespace-only
+spec:
+  podSelector:
+    matchLabels:
+      app: devops-ninja              # Cible les pods de ton app
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: default         # Autorise seulement les pods du namespace "default"

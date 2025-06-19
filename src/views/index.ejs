@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CloudNinja - Catalogue</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header>
+    <h1> CloudNinja</h1>
+    <p>Catalogue de services sécurisé</p>
+  </header>
+
+  <!-- ✅ Inclusion de la navbar -->
+  <%- include('partials/navbar') %>
+
+  <main>
+    <section class="services container">
+      <h2>Nos Services</h2>
+      <ul id="service-list">
+        <% if (services && services.length > 0) { %>
+          <% services.forEach(service => { %>
+            <li><%= service.name %> - <%= service.description %></li>
+          <% }) %>
+        <% } else { %>
+          <li>Aucun service disponible</li>
+        <% } %>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 CloudNinja Corp</p>
+  </footer>
+
+  <script src="/js/script.js"></script>
+</body>
+</html>
+

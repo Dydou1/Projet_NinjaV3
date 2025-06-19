@@ -1,0 +1,46 @@
+{
+  "name": "devops-ninja",
+  "version": "1.0.0",
+  "description": "Application web Node.js pour le parcours DevOps Ninja",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "lint": "npx eslint .",
+    "audit": "npm audit --audit-level=high",
+    "test": "jest --coverage",
+    "doc": "jsdoc -c jsdoc.json"
+  },
+  "keywords": [
+    "devops",
+    "nodejs",
+    "express",
+    "api"
+  ],
+  "author": "Daniel - Dylan",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^3.1.9",
+    "express": "^4.18.4",
+    "express-session": "^1.17.3",
+    "express-validator": "^6.15.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "jsdoc": "^4.0.2",
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.3"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "coverage",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/server.js"
+    ]
+  }
+}

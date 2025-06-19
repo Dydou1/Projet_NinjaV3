@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: devops-ninja-service           # Nom du service (utilisé pour accès + port-forward)
+spec:
+  type: NodePort                       # Permet l'accès externe via un port de l'hôte
+  selector:
+    app: devops-ninja                  # Fait le lien avec les pods du Deployment
+  ports:
+    - name: https
+      protocol: TCP
+      port: 443                        # Port d'entrée du service
+      targetPort: 3443                 # Port exposé dans le conteneur (serveur HTTPS)
+      nodePort: 30816                  # Port ouvert sur le nœud Minikube pour y accéder

@@ -1,0 +1,163 @@
+/* Base */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #f4f9fd, #e0f7fa);
+  margin: 0;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  background: #0d47a1;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Main container */
+main {
+  flex: 1;
+  padding: 2rem;
+}
+
+/* Section container */
+.container {
+  max-width: 800px;
+  margin: auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.center {
+  text-align: center;
+}
+
+/* Services */
+.services h2 {
+  margin-bottom: 1rem;
+  color: #0d47a1;
+  font-size: 1.8rem;
+}
+
+.services ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.services li {
+  padding: 0.75rem 1rem;
+  background: #f1f1f1;
+  margin-bottom: 0.5rem;
+  border-radius: 0.5rem;
+  transition: background 0.3s ease;
+}
+
+.services li:hover {
+  background: #e3f2fd;
+}
+
+/* Cards (for services.ejs) */
+.card-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  background: #e3f2fd;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+  margin-top: 0;
+}
+
+/* Badge (for status.ejs) */
+.badge.ok {
+  background-color: #4caf50;
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+}
+
+/* Footer */
+footer {
+  background: #0d47a1;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+}
+
+/* Navbar */
+.navbar {
+  background-color: #0d47a1;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.navbar li {
+  display: inline;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.navbar a:hover {
+  color: #bbdefb;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 2rem;
+  }
+
+  .services {
+    padding: 1rem;
+  }
+
+  .services h2 {
+    font-size: 1.5rem;
+  }
+
+  .card-list {
+    grid-template-columns: 1fr;
+  }
+
+  .navbar ul {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

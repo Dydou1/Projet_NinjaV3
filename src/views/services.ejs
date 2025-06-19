@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Services</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>CloudNinja</h1>
+  </header>
+
+  <%- include('partials/navbar') %> <!-- NAVBAR INCLUSE -->
+
+  <main class="container">
+    <h2>Nos services</h2>
+    <ul class="card-list">
+      <% services.forEach(service => { %>
+        <li class="card">
+          <h3><%= service.name %></h3>
+          <p><%= service.description %></p>
+        </li>
+      <% }) %>
+    </ul>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 CloudNinja Corp</p>
+  </footer>
+</body>
+</html>
+

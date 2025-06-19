@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Connexion - CloudNinja</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Connexion CloudNinja</h1>
+  </header>
+
+  <!-- Navbar partagée -->
+  <%- include('partials/navbar') %>
+
+  <main class="container center">
+    <% if (error) { %>
+      <p style="color: red; font-weight: bold;"><%= error %></p>
+    <% } %>
+
+    <form method="POST" action="/login">
+      <div>
+        <label for="username">Nom d'utilisateur</label><br>
+        <input type="text" id="username" name="username" required placeholder="admin">
+      </div><br>
+
+      <div>
+        <label for="password">Mot de passe</label><br>
+        <input type="password" id="password" name="password" required placeholder="ninja">
+      </div><br>
+
+      <button type="submit">Se connecter</button>
+    </form>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 CloudNinja</p>
+  </footer>
+</body>
+</html>
+

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-ninja-app              # Nom du déploiement
+spec:
+  replicas: 3                         # Lance 3 pods identiques (haute dispo)
+  selector:
+    matchLabels:
+      app: devops-ninja               # Doit correspondre aux labels dans le template
+  template:
+    metadata:
+      labels:
+        app: devops-ninja             # Utilisé pour lier le pod au service
+    spec:
+      containers:
+        - name: app
+          image: projet_ninja_app:latest        # Image Docker locale à utiliser
+          imagePullPolicy: Never                # Ne pas essayer de pull depuis un registry
+          ports:
+            - containerPort: 3443               # Port HTTPS exposé dans le conteneur
+          envFrom:
+            - configMapRef:
+                name: app-config                # Injecte les variables du ConfigMap
+            - secretRef:
+                name: app-secrets               # Injecte les variables du Secret
+          resources:
+              limits:
+                memory: "256Mi"
+                cpu: "500m"
+              requests:
+                memory: "128Mi"
+                cpu: "200m"
+          # Sondes de vie pour surveiller la santé du pod
+          livenessProbe:
+            httpGet:
+              path: /api/status                # Endpoint santé (doit répondre)
+              port: 3443
+              scheme: HTTPS
+            initialDelaySeconds: 10           # Délai avant la 1ère vérif
+            periodSeconds: 15                 # Intervalle entre vérifs
+          readinessProbe:
+            httpGet:
+              path: /api/status
+              port: 3443
+              scheme: HTTPS
+            initialDelaySeconds: 5
+            periodSeconds: 10

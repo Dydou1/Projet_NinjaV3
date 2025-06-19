@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Status - CloudNinja</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1> État de l'application</h1>
+  </header>
+<%- include('partials/navbar') %>
+  <main>
+    <section class="container center">
+      <h2>Statut Serveur</h2>
+      <p><strong>Status :</strong> <span class="badge ok"><%= status %></span></p>
+      <p><strong>Uptime :</strong> <%= uptime %> secondes</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 CloudNinja Corp</p>
+  </footer>
+</body>
+</html>
+
