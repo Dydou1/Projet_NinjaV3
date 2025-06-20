@@ -1,4 +1,11 @@
-- name: Install PostgreSQL
-  apt:
+---
+- name: Mettre à jour le cache APT
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Installer PostgreSQL
+  ansible.builtin.apt:
     name: postgresql
     state: present
+

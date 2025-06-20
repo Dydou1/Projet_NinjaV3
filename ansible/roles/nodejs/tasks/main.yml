@@ -1,2 +1,31 @@
-- name: Install Node.js
-  shell: curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+---
+- name: Télécharger le script Node.js v{{ node_version }}
+  ansible.builtin.get_url:
+    url: https://deb.nodesource.com/setup_{{ node_version }}.x
+    dest: /tmp/node_setup.sh
+    mode: '0755'
+
+- name: Exécuter le script Node.js
+  ansible.builtin.command: bash /tmp/node_setup.sh
+  register: node_setup_result
+  changed_when: "'Node.js' in node_setup_result.stdout or node_setup_result.rc == 0"
+  failed_when: node_setup_result.rc != 0
+
+- name: Installer Node.js
+  ansible.builtin.apt:
+    name: nodejs
+    state: present
+    update_cache: yes
+
+- name: Installer les dépendances npm
+  community.general.npm:
+    path: "{{ app_path }}"
+    production: true
+
+- name: Démarrer l'application Node.js
+  ansible.builtin.shell: |
+    nohup node {{ app_path }}/src/server.js > /var/log/app.log 2>&1 &
+  args:
+    executable: /bin/bash
+    creates: /var/log/app.log
+
