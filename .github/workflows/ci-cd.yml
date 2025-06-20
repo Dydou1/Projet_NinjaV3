@@ -13,20 +13,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Install Ansible & Ansible-Lint via pip
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-pip
           pip install ansible ansible-lint
+
       - name: Lint Ansible
         run: |
           cd ansible
           ansible-lint . --force-color
-      - name: Lint Vagrantfile
-        run: |
-          sudo apt-get install -y ruby ruby-dev
-          gem install vagrant-vagrantfile-lint
-          vagrant-vagrantfile-lint Vagrantfile
+
+      # Optionnel : validation du Vagrantfile à faire localement via `vagrant validate`
+      # GitHub Actions n'a pas Vagrant, donc cette étape est retirée
 
   build-test:
     runs-on: ubuntu-latest
