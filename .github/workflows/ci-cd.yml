@@ -13,10 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Lint Ansible
+      - name: Install Ansible & Ansible-Lint via pip
         run: |
-          sudo apt-get update && sudo apt-get install -y ansible-lint
-          ansible-lint ansible/
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip install ansible ansible-lint
+      - name: Lint Ansible
+        run: ansible-lint ansible/
       - name: Lint Vagrantfile
         run: |
           sudo apt-get install -y ruby ruby-dev
@@ -50,8 +53,11 @@ jobs:
     if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v3
-      - name: Install Ansible
-        run: sudo apt-get update && sudo apt-get install -y ansible
+      - name: Install Ansible via pip
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip install ansible
       - name: Deploy to Dev
         run: ansible-playbook -i ansible/inventories/dev/hosts.yml ansible/playbooks/frontend.yml
 
@@ -64,8 +70,11 @@ jobs:
       url: https://prod.example.com
     steps:
       - uses: actions/checkout@v3
-      - name: Install Ansible
-        run: sudo apt-get install -y ansible
+      - name: Install Ansible via pip
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip install ansible
       - name: Deploy to Prod
         run: ansible-playbook -i ansible/inventories/prod/hosts.yml ansible/playbooks/site.yml
 
