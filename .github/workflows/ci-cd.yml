@@ -12,7 +12,6 @@ jobs:
   build-test:
     name: Build & Test Node.js App
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -23,91 +22,108 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          echo "Installing npm dependencies..."
+          npm ci
 
       - name: Lint code
-        run: npm run lint
+        run: |
+          echo "Running linter..."
+          npm run lint
 
       - name: Run unit tests
-        run: npm test
+        run: |
+          echo "Running unit tests..."
+          npm test
 
   docker-deploy:
     name: Docker Build + Deploy to Minikube
     runs-on: self-hosted
     needs: build-test
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Build Docker image
-        run: docker build -t devops-ninja-app:latest .
+        run: |
+          echo "Building Docker image..."
+          docker build -t devops-ninja-app:latest .
 
       - name: Deploy to Minikube
         run: |
+          echo "Deploying to Minikube..."
           kubectl apply -f k8s/
           kubectl rollout status deployment/devops-ninja-app
 
   lint-infra:
     name: Lint Vagrant & Ansible
     runs-on: self-hosted
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Validate Vagrantfile
         working-directory: ./vagrant
-        run: vagrant validate
+        run: |
+          echo "Validating Vagrantfile..."
+          vagrant validate
 
       - name: Install ansible-lint
         run: |
+          echo "Installing ansible-lint..."
           sudo apt update
           sudo apt install -y ansible-lint
 
       - name: Lint Ansible playbooks
         working-directory: ./ansible
-        run: ansible-lint site.yml
+        run: |
+          echo "Linting Ansible playbooks..."
+          ansible-lint site.yml
 
   deploy-infra:
     name: Deploy with Vagrant & Ansible
     runs-on: self-hosted
     needs: lint-infra
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Install Ansible & dependencies
         run: |
+          echo "Installing Ansible and dependencies..."
           sudo apt update
           sudo apt install -y ansible sshpass python3-pymysql
 
       - name: Start Vagrant VMs
         working-directory: ./vagrant
         run: |
+          echo "Starting Vagrant machines..."
           vagrant up --provider=virtualbox
           vagrant status
 
       - name: Run Ansible Playbook
         working-directory: ./ansible
-        run: ansible-playbook -i inventories/dev/hosts.ini site.yml --ask-vault-pass
+        run: |
+          echo "Running Ansible Playbook..."
+          ansible-playbook -i inventories/dev/hosts.ini site.yml
 
   test-infra:
     name: Infrastructure Tests (Testinfra)
     runs-on: self-hosted
     needs: deploy-infra
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Install Python requirements
         run: |
+          echo "Installing Python tools for testinfra..."
           sudo apt update
           sudo apt install -y python3-pip
           pip3 install testinfra pytest
 
       - name: Run Infra Tests
         working-directory: ./tests
-        run: pytest -v
+        run: |
+          echo "Running infrastructure tests..."
+          pytest -v
