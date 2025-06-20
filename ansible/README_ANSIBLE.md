@@ -1,4 +1,4 @@
-# 📦 Projet Ansible - Déploiement Infrastructure 3-Tiers
+# Projet Ansible - Déploiement Infrastructure 3-Tiers
 
 Ce projet utilise **Ansible** pour automatiser le déploiement d’une architecture **3 tiers** composée de :
 
@@ -8,7 +8,7 @@ Ce projet utilise **Ansible** pour automatiser le déploiement d’une architect
 
 ---
 
-## 📁 Arborescence du projet
+## Arborescence du projet
 
 ```
 ansible/
@@ -100,7 +100,7 @@ ansible-playbook -i inventories/dev/hosts.yml playbooks/db.yml --ask-vault-pass
 
 ---
 
-## 💡 Conseils utiles
+## Conseils utiles
 
 - Utilise `--check` pour faire un **dry-run** (pas d’exécution réelle)
 - Relance `vagrant provision` si tu modifies la config des machines
