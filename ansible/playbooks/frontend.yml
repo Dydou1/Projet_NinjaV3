@@ -1,3 +1,5 @@
+---
 - hosts: frontend
+  become: true
   roles:
     - nginx
