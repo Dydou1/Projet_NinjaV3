@@ -17,7 +17,8 @@ Vagrant.configure("2") do |config|
     frontend.vm.box = "ubuntu/bionic64"
     frontend.vm.hostname = "frontend"
     frontend.vm.network "private_network", ip: "192.168.56.10"
-    frontend.vm.provider "virtualbox"  # 👈 Ajouté ici aussi
+    frontend.vm.provider "virtualbox"
+    frontend.vm.synced_folder ".", "/vagrant", type: "virtualbox"
     frontend.vm.provision "shell", path: "provision/frontend.sh"
   end
 
@@ -26,7 +27,8 @@ Vagrant.configure("2") do |config|
     backend.vm.box = "ubuntu/bionic64"
     backend.vm.hostname = "backend"
     backend.vm.network "private_network", ip: "192.168.56.11"
-    backend.vm.provider "virtualbox"  # 👈 Ajouté ici aussi
+    backend.vm.provider "virtualbox"
+    backend.vm.synced_folder ".", "/vagrant", type: "virtualbox"
     backend.vm.provision "shell", path: "provision/backend.sh"
   end
 
@@ -36,6 +38,7 @@ Vagrant.configure("2") do |config|
     db.vm.hostname = "db"
     db.vm.network "private_network", ip: "192.168.56.12"
     db.vm.provider "virtualbox"
+    db.vm.synced_folder ".", "/vagrant", type: "virtualbox"
     db.vm.provision "shell", path: "provision/db.sh"
   end
 end
