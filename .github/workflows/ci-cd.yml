@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline (Node.js + Docker + Vagrant + Ansible)
 
 on:
   push:
@@ -9,27 +9,12 @@ on:
 
 jobs:
 
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install Ansible & Ansible-Lint via pip
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-pip
-          pip install ansible ansible-lint
-
-      - name: Lint Ansible
-        run: |
-          cd ansible
-          ansible-lint . --force-color
-
   build-test:
+    name: Build & Test Node.js App
     runs-on: ubuntu-latest
-    needs: lint
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Setup Node.js
@@ -40,71 +25,89 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint JS
+      - name: Lint code
         run: npm run lint
 
-      - name: Unit tests
+      - name: Run unit tests
         run: npm test
 
-  # ⚠️ Déploiement désactivé car les VMs Vagrant ne sont pas accessibles depuis GitHub Actions
-  # Voir README pour l'explication complète.
-  # Les playbooks ont été testés manuellement en local.
-
-  # deploy-dev:
-  #   runs-on: ubuntu-latest
-  #   needs: build-test
-  #   if: github.event_name == 'push'
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Install Ansible via pip
-  #       run: |
-  #         sudo apt-get update
-  #         sudo apt-get install -y python3-pip
-  #         pip install ansible
-  #     - name: Deploy to Dev
-  #       run: |
-  #         export ANSIBLE_CONFIG=ansible/ansible.cfg
-  #         ansible-playbook -i ansible/inventories/dev/hosts.yml ansible/playbooks/frontend.yml
-
-  # deploy-prod:
-  #   runs-on: ubuntu-latest
-  #   needs: build-test
-  #   if: github.event_name == 'workflow_dispatch'
-  #   environment:
-  #     name: production
-  #     url: https://prod.example.com
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Install Ansible via pip
-  #       run: |
-  #         sudo apt-get update
-  #         sudo apt-get install -y python3-pip
-  #         pip install ansible
-  #     - name: Deploy to Prod
-  #       run: |
-  #         export ANSIBLE_CONFIG=ansible/ansible.cfg
-  #         ansible-playbook -i ansible/inventories/prod/hosts.yml ansible/playbooks/site.yml
-
   docker-deploy:
+    name: Docker Build + Deploy to Minikube
     runs-on: self-hosted
     needs: build-test
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Build Docker image
         run: docker build -t devops-ninja-app:latest .
+
       - name: Deploy to Minikube
         run: |
           kubectl apply -f k8s/
           kubectl rollout status deployment/devops-ninja-app
 
-  test-infra:
-    runs-on: ubuntu-latest
-    # Dépend uniquement du build maintenant que deploy-dev/prod est désactivé
-    needs: build-test
+  lint-infra:
+    name: Lint Vagrant & Ansible
+    runs-on: self-hosted
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Install testinfra
-        run: pip install testinfra
-      - name: Run infrastructure tests
-        run: pytest test/
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Validate Vagrantfile
+        working-directory: ./vagrant
+        run: vagrant validate
+
+      - name: Install ansible-lint
+        run: |
+          sudo apt update
+          sudo apt install -y ansible-lint
+
+      - name: Lint Ansible playbooks
+        working-directory: ./ansible
+        run: ansible-lint site.yml
+
+  deploy-infra:
+    name: Deploy with Vagrant & Ansible
+    runs-on: self-hosted
+    needs: lint-infra
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Ansible & dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y ansible sshpass python3-pymysql
+
+      - name: Start Vagrant VMs
+        working-directory: ./vagrant
+        run: |
+          vagrant up --provider=virtualbox
+          vagrant status
+
+      - name: Run Ansible Playbook
+        working-directory: ./ansible
+        run: ansible-playbook -i inventories/dev/hosts.ini site.yml --ask-vault-pass
+
+  test-infra:
+    name: Infrastructure Tests (Testinfra)
+    runs-on: self-hosted
+    needs: deploy-infra
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Python requirements
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip
+          pip3 install testinfra pytest
+
+      - name: Run Infra Tests
+        working-directory: ./tests
+        run: pytest -v
