@@ -1,22 +1,41 @@
 Vagrant.configure("2") do |config|
-  config.vm.box = "ubuntu/bionic64"
+  # VM Ansible (machine de contrôle)
+  config.vm.define "ansible" do |ansible|
+    ansible.vm.box = "ubuntu/bionic64"
+    ansible.vm.hostname = "ansible"
+    ansible.vm.network "private_network", ip: "192.168.56.13"
+    ansible.vm.provider "virtualbox"
+    ansible.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+    ansible.vm.provision "shell", inline: <<-SHELL
+      sudo apt-get update
+      sudo apt-get install -y ansible sshpass git
+    SHELL
+  end
 
+  # VM frontend
   config.vm.define "frontend" do |frontend|
+    frontend.vm.box = "ubuntu/bionic64"
     frontend.vm.hostname = "frontend"
     frontend.vm.network "private_network", ip: "192.168.56.10"
+    frontend.vm.provider "virtualbox"  # 👈 Ajouté ici aussi
     frontend.vm.provision "shell", path: "provision/frontend.sh"
   end
 
+  # VM backend
   config.vm.define "backend" do |backend|
+    backend.vm.box = "ubuntu/bionic64"
     backend.vm.hostname = "backend"
     backend.vm.network "private_network", ip: "192.168.56.11"
+    backend.vm.provider "virtualbox"  # 👈 Ajouté ici aussi
     backend.vm.provision "shell", path: "provision/backend.sh"
   end
 
+  # VM base de données
   config.vm.define "db" do |db|
+    db.vm.box = "ubuntu/bionic64"
     db.vm.hostname = "db"
     db.vm.network "private_network", ip: "192.168.56.12"
+    db.vm.provider "virtualbox"
     db.vm.provision "shell", path: "provision/db.sh"
   end
 end
-

@@ -1,0 +1,3 @@
+mysql_root_password: rootpass
+mysql_user: ninja
+mysql_password: ninjapass

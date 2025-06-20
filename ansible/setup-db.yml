@@ -1,0 +1,17 @@
+---
+- hosts: frontend
+  become: yes
+  roles:
+    - frontend
+
+- hosts: backend
+  become: yes
+  roles:
+    - backend
+
+- hosts: db
+  become: true
+  vars_files:
+    - vars/vault.yml
+  roles:
+    - mysql
