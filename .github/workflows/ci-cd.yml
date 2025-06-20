@@ -19,7 +19,9 @@ jobs:
           sudo apt-get install -y python3-pip
           pip install ansible ansible-lint
       - name: Lint Ansible
-        run: ansible-lint ansible/
+        run: |
+          cd ansible
+          ansible-lint . --force-color
       - name: Lint Vagrantfile
         run: |
           sudo apt-get install -y ruby ruby-dev
