@@ -1,0 +1,83 @@
+name: CI/CD Vagrant + Ansible
+
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  lint-code:
+    name: Lint Vagrant + Ansible
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Validate Vagrantfile
+        working-directory: ./vagrant
+        run: |
+          echo " Validation du Vagrantfile..."
+          vagrant validate
+
+      - name: Install ansible-lint
+        run: |
+          echo " Installation ansible-lint..."
+          sudo apt update
+          sudo apt install -y ansible-lint
+
+      - name: Lint des playbooks Ansible
+        working-directory: ./ansible
+        run: |
+          echo " Lint des playbooks Ansible..."
+          ansible-lint playbooks/site.yml
+
+  deploy-infra:
+    name: Déploiement VMs + Ansible
+    runs-on: self-hosted
+    needs: lint-code
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Ansible et dépendances
+        run: |
+          echo " Installation des dépendances..."
+          sudo apt update
+          sudo apt install -y ansible sshpass python3-pymysql
+
+      - name: Lancer les VMs Vagrant
+        working-directory: ./vagrant
+        run: |
+          echo " Démarrage des machines Vagrant..."
+          vagrant up --provider=virtualbox
+          vagrant status
+
+      - name: Exécuter le playbook Ansible
+        working-directory: ./ansible
+        run: |
+          echo "📡 Déploiement avec Ansible..."
+          ansible-playbook -i inventories/dev/hosts.yml playbooks/site.yml
+
+  test-infra:
+    name: Test Infrastructure (Testinfra)
+    runs-on: self-hosted
+    needs: deploy-infra
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Installer Testinfra & Pytest
+        run: |
+          echo " Installation Testinfra/Pytest..."
+          sudo apt update
+          sudo apt install -y python3-pip
+          pip3 install testinfra pytest
+
+      - name: Lancer les tests d'infra
+        working-directory: ./tests
+        run: |
+          echo " Tests de validation de l'infrastructure..."
+          pytest -v
